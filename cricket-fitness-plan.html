@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Cricket Fit"/>
+<meta name="theme-color" content="#0f1a0e"/>
+<title>Cricket Fitness Plan</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  body{font-family:Georgia,'Times New Roman',serif;background:#0f1a0e;color:#e8f0e0;min-height:100vh;}
+  button{font-family:inherit;cursor:pointer;}
+  .header{background:linear-gradient(135deg,#1a3d0a 0%,#0f2d08 50%,#0a1f05 100%);border-bottom:3px solid #4a8a20;padding:28px 16px 20px;text-align:center;position:relative;overflow:hidden;}
+  .header-bg{position:absolute;inset:0;background:radial-gradient(circle at 20% 50%,rgba(74,138,32,.15) 0%,transparent 50%),radial-gradient(circle at 80% 20%,rgba(74,138,32,.1) 0%,transparent 40%);}
+  .header-inner{position:relative;z-index:1;}
+  .header-tag{font-size:10px;letter-spacing:4px;color:#7acc40;text-transform:uppercase;margin-bottom:6px;font-family:monospace;}
+  .header h1{font-size:clamp(20px,5vw,34px);margin:0 0 6px;font-weight:900;color:#e8f5d0;line-height:1.1;letter-spacing:-1px;}
+  .header p{color:#8ab870;margin:0 0 14px;font-size:12px;font-style:italic;}
+  .stats{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+  .stat{background:rgba(74,138,32,.15);border:1px solid rgba(74,138,32,.4);border-radius:8px;padding:5px 12px;text-align:center;}
+  .stat-label{font-size:9px;color:#7acc40;letter-spacing:2px;}
+  .stat-val{font-size:15px;font-weight:bold;color:#d4f0a0;}
+  .tabs{display:flex;background:#0a150a;border-bottom:1px solid #2a4a1a;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;position:sticky;top:0;z-index:10;}
+  .tabs::-webkit-scrollbar{display:none;}
+  .tab{flex:1;min-width:60px;padding:12px 4px;background:transparent;color:#5a7a50;border:none;border-bottom:3px solid transparent;font-size:11px;font-weight:600;font-family:monospace;transition:all .2s;white-space:nowrap;}
+  .tab.active{background:#1a3d0a;color:#7acc40;border-bottom:3px solid #7acc40;}
+  .content{padding:16px;max-width:700px;margin:0 auto;}
+  .section-title{color:#7acc40;font-size:12px;letter-spacing:3px;text-transform:uppercase;margin-bottom:12px;font-family:monospace;}
+  .card{background:#12200a;border:1px solid #2a4a1a;border-radius:10px;padding:14px;margin-bottom:14px;}
+  .card-blue{background:#0a1a2a;border:1px solid #1a3a5a;border-radius:10px;padding:14px;margin-bottom:14px;}
+  .card-gold{background:#1a150a;border:1px solid #5a4a20;border-radius:10px;padding:14px;margin-bottom:14px;}
+  .card-dark{background:#1a1a0a;border:1px solid #5a5a20;border-radius:10px;padding:14px;margin-bottom:14px;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+  .target-card{background:linear-gradient(135deg,#1a3d0a,#152d0a);border:1px solid #2a5a1a;border-radius:10px;padding:12px;}
+  .target-label{font-size:9px;color:#7acc40;letter-spacing:1px;margin-bottom:3px;font-family:monospace;}
+  .target-val{font-size:16px;font-weight:bold;color:#c8f090;line-height:1.1;}
+  .target-sub{font-size:10px;color:#5a7a50;margin-top:3px;}
+  .week-switcher{display:flex;align-items:center;gap:10px;margin-bottom:12px;background:#0a150a;border:1px solid #2a4a1a;border-radius:10px;padding:10px 12px;}
+  .week-btn{background:#1a3a0a;border:1px solid #3a6a1a;color:#7acc40;border-radius:6px;padding:5px 14px;font-size:18px;line-height:1;}
+  .week-center{flex:1;text-align:center;}
+  .week-title{font-size:14px;font-weight:bold;color:#c8f090;}
+  .week-sub{font-size:10px;color:#5a8a50;font-family:monospace;margin-top:2px;}
+  .day-row{background:#12220a;border:1px solid #1a3a0a;border-radius:8px;padding:10px 12px;margin-bottom:7px;cursor:pointer;}
+  .day-row.game{border:1px solid #5a3a00;border-left:4px solid #ffaa20;}
+  .day-row.cricket-day{border-left:4px solid #90cc40;}
+  .day-row.rest-day{opacity:.75;}
+  .day-flex{display:flex;align-items:center;gap:8px;}
+  .day-label{font-family:monospace;font-weight:bold;color:#4a8a20;font-size:11px;width:26px;flex-shrink:0;}
+  .day-icon{font-size:15px;}
+  .day-info{flex:1;}
+  .day-name{font-size:13px;color:#c8e8a0;}
+  .day-name.gold{color:#ffd070;}
+  .day-time{font-size:10px;color:#5a7a50;margin-top:1px;}
+  .chicken-badge{font-size:9px;background:#2a1a0a;color:#cc8840;border:1px solid #5a3a1a;padding:2px 5px;border-radius:4px;font-family:monospace;flex-shrink:0;}
+  .type-badge{font-size:9px;padding:2px 5px;border-radius:4px;text-transform:uppercase;font-family:monospace;letter-spacing:1px;flex-shrink:0;}
+  .type-strength{color:#7acc40;background:#1a3a0a;}
+  .type-cardio{color:#40aacc;background:#0a2a3a;}
+  .type-cricket{color:#90cc40;background:#1a2a0a;}
+  .type-game{color:#ffaa20;background:#2a1a00;}
+  .type-rest{color:#4a6a40;background:#0f1a0e;}
+  .day-note{margin-top:8px;padding-top:8px;border-top:1px solid #1a3a0a;font-size:12px;color:#7aaa60;line-height:1.6;display:none;}
+  .day-note.open{display:block;}
+  .phase-card{background:#12220a;border-radius:10px;padding:12px 14px;margin-bottom:8px;display:flex;gap:10px;border:1px solid rgba(0,0,0,.3);}
+  .phase-num{color:#fff;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:12px;flex-shrink:0;}
+  .phase-title{font-weight:bold;color:#d4f0a0;font-size:14px;}
+  .phase-dur{font-size:10px;font-family:monospace;}
+  .phase-wt{font-size:12px;color:#8ab870;margin:2px 0;}
+  .phase-focus{font-size:11px;color:#5a7a50;}
+  .pillar{background:#12200a;border:1px solid #2a4a1a;border-radius:10px;padding:12px 14px;margin-bottom:10px;display:flex;gap:10px;}
+  .pillar-icon{font-size:20px;flex-shrink:0;}
+  .pillar-title{font-weight:bold;color:#c8f090;font-size:13px;margin-bottom:3px;}
+  .pillar-desc{font-size:12px;color:#7aaa60;line-height:1.6;}
+  .math-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #1a3a0a;font-size:13px;}
+  .math-row:last-child{border-bottom:none;}
+  .math-label{color:#8ab870;}
+  .math-val{color:#c8f090;font-family:monospace;font-weight:bold;}
+  .warn-card{background:#1a0a0a;border:1px solid #5a2020;border-radius:10px;padding:14px;margin-bottom:14px;}
+  .warn-title{font-size:13px;color:#cc6060;font-weight:bold;margin-bottom:8px;}
+  .warn-item{display:flex;gap:8px;margin-bottom:5px;font-size:12px;color:#aa7070;}
+  .warn-x{flex-shrink:0;color:#cc6060;}
+  .toggle-row{display:flex;margin-bottom:16px;border-radius:10px;overflow:hidden;border:1px solid #2a4a1a;}
+  .toggle-btn{flex:1;padding:11px;border:none;font-size:12px;font-weight:bold;font-family:inherit;cursor:pointer;transition:all .2s;}
+  .toggle-veg{background:#0f1a0e;color:#5a7a50;}
+  .toggle-veg.active{background:#1a3d0a;color:#c8f090;}
+  .toggle-chk{background:#0f1a0e;color:#5a7a50;}
+  .toggle-chk.active{background:#2a1a0a;color:#e8c080;}
+  .meal-card{background:#12200a;border:1px solid #2a4a1a;border-radius:12px;overflow:hidden;margin-bottom:12px;}
+  .meal-card.chicken{border-color:#4a3a1a;}
+  .meal-head{background:#1a3a0a;padding:9px 12px;display:flex;justify-content:space-between;align-items:center;}
+  .meal-head.chicken{background:#1f1508;}
+  .meal-name{font-weight:bold;color:#c8f090;font-size:13px;}
+  .meal-time{color:#5a7a50;font-size:10px;margin-left:6px;}
+  .meal-kcal{font-size:11px;font-family:monospace;font-weight:bold;color:#7acc40;}
+  .meal-kcal.chicken{color:#ccaa40;}
+  .meal-body{padding:10px 12px;}
+  .food-item{display:flex;gap:6px;margin-bottom:4px;font-size:12px;color:#a0c880;}
+  .food-dot{color:#4a8a20;flex-shrink:0;}
+  .tip-box{background:#0a2a0a;border-left:3px solid #4a8a20;padding:7px 9px;border-radius:0 5px 5px 0;font-size:11px;color:#7acc40;font-style:italic;margin-top:8px;}
+  .swap-row{display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;font-size:12px;}
+  .swap-text{color:#a0a870;}
+  .swap-save{color:#7acc40;flex-shrink:0;font-family:monospace;}
+  .progress-card{background:#0a150f;border:1px solid #1a3a2a;border-radius:8px;padding:10px 12px;margin-bottom:7px;display:flex;gap:8px;}
+  .prog-week{font-family:monospace;color:#40aacc;font-size:10px;min-width:55px;padding-top:2px;}
+  .prog-act{font-size:12px;color:#c0e0d0;}
+  .prog-int{font-size:10px;color:#5a8a70;margin-top:2px;}
+  .ex-card{background:#12200a;border:1px solid #2a4a1a;border-radius:8px;padding:11px 12px;margin-bottom:6px;cursor:pointer;}
+  .ex-card.gold{background:#151008;border-color:#3a2a0a;}
+  .ex-row{display:flex;justify-content:space-between;align-items:center;}
+  .ex-name{font-size:13px;color:#c8f090;font-weight:600;}
+  .ex-name.gold{color:#e8d080;}
+  .ex-sets{font-size:11px;font-family:monospace;color:#7acc40;}
+  .ex-sets.gold{color:#ccaa40;}
+  .ex-notes{margin-top:7px;padding-top:7px;border-top:1px solid #2a4a1a;font-size:12px;color:#7aaa50;display:none;}
+  .ex-notes.open{display:block;}
+  .ex-notes.gold{border-top-color:#3a2a0a;color:#a08840;}
+  .recovery-card{background:#1a0a1a;border:1px solid #4a204a;border-radius:10px;padding:14px;margin-bottom:14px;}
+  .recovery-title{font-size:13px;color:#cc70cc;font-weight:bold;margin-bottom:8px;}
+  .recovery-item{display:flex;gap:8px;margin-bottom:5px;font-size:12px;color:#a07aa0;}
+  .recovery-dot{flex-shrink:0;color:#cc70cc;}
+  .matchday-row{display:flex;gap:10px;margin-bottom:8px;font-size:12px;}
+  .matchday-time{color:#7acc40;font-family:monospace;font-size:10px;min-width:70px;padding-top:2px;}
+  .matchday-food{color:#a0c880;}
+  .milestone{background:#151008;border-left:4px solid #ccaa40;border-radius:0 8px 8px 0;padding:9px 12px;margin-bottom:7px;}
+  .milestone-wt{font-size:10px;color:#ccaa40;font-family:monospace;margin-bottom:2px;}
+  .milestone-text{font-size:12px;color:#d0c080;}
+  .cheer{background:#0a1a0a;border:2px solid #4a8a20;border-radius:12px;padding:18px 14px;text-align:center;margin-bottom:16px;}
+  .cheer-icon{font-size:28px;margin-bottom:6px;}
+  .cheer-title{font-size:14px;color:#c8f090;font-weight:bold;margin-bottom:5px;}
+  .cheer-text{font-size:12px;color:#6a9a50;line-height:1.6;}
+  .morning-row{display:flex;gap:10px;margin-bottom:10px;align-items:flex-start;}
+  .morning-time{font-family:monospace;color:#40aacc;font-size:11px;min-width:55px;}
+  .morning-line{width:1px;background:#1a3a5a;align-self:stretch;margin:2px 0;}
+  .morning-act{font-size:13px;color:#a0c8e0;}
+  .info-box{background:#1a1a0a;border:2px solid #5a8a20;border-radius:10px;padding:14px;margin-bottom:16px;}
+  .info-title{font-size:13px;color:#c8f090;font-weight:bold;margin-bottom:6px;}
+  .info-text{font-size:12px;color:#8aaa60;line-height:1.7;}
+  .week-gold{display:flex;align-items:center;gap:10px;margin-bottom:14px;background:#1a1508;border:1px solid #4a3a10;border-radius:10px;padding:10px 12px;}
+  .week-btn-gold{background:#2a1a08;border:1px solid #5a3a10;color:#ccaa40;border-radius:6px;padding:5px 14px;font-size:18px;line-height:1;}
+  .week-title-gold{font-size:14px;font-weight:bold;color:#ffd070;}
+  .week-sub-gold{font-size:10px;color:#8a7040;font-family:monospace;margin-top:2px;}
+  .hidden{display:none;}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-bg"></div>
+  <div class="header-inner">
+    <div class="header-tag">Cricket Fitness Program · Morning Edition</div>
+    <h1>From 262.8 lbs to the Field</h1>
+    <p>Morning workouts · Chicken Mon/Wed/Fri/Sun · Wed practice + alternating Sat/Sun games</p>
+    <div class="stats">
+      <div class="stat"><div class="stat-label">AGE</div><div class="stat-val">38</div></div>
+      <div class="stat"><div class="stat-label">CURRENT</div><div class="stat-val">262.8 lbs</div></div>
+      <div class="stat"><div class="stat-label">GOAL</div><div class="stat-val">150 lbs</div></div>
+      <div class="stat"><div class="stat-label">TO LOSE</div><div class="stat-val">112.8 lbs</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab active" onclick="showTab('overview',this)">📊 Overview</button>
+  <button class="tab" onclick="showTab('weightloss',this)">⚖️ Weight Loss</button>
+  <button class="tab" onclick="showTab('nutrition',this)">🥗 Nutrition</button>
+  <button class="tab" onclick="showTab('training',this)">💪 Training</button>
+  <button class="tab" onclick="showTab('cricket',this)">🏏 Cricket</button>
+</div>
+
+<div class="content">
+
+<!-- ══ OVERVIEW ══ -->
+<div id="tab-overview">
+  <div class="section-title">◆ Your Morning Routine</div>
+  <div class="card-blue" style="margin-bottom:16px;">
+    <div class="morning-row"><div class="morning-time">5:15 AM</div><div class="morning-line"></div><div class="morning-act">Wake up, 2 glasses water</div></div>
+    <div class="morning-row"><div class="morning-time">5:30 AM</div><div class="morning-line"></div><div class="morning-act">Pre-workout snack (banana)</div></div>
+    <div class="morning-row"><div class="morning-time">5:45 AM</div><div class="morning-line"></div><div class="morning-act">5-min warm-up (jumping jacks, arm circles, leg swings)</div></div>
+    <div class="morning-row"><div class="morning-time">6:00 AM</div><div class="morning-line"></div><div class="morning-act">Workout begins (strength or cardio)</div></div>
+    <div class="morning-row"><div class="morning-time">7:00 AM</div><div class="morning-line"></div><div class="morning-act">Cool-down + stretching (10 min)</div></div>
+    <div class="morning-row"><div class="morning-time">7:15 AM</div><div class="morning-line"></div><div class="morning-act">Shower + freshen up</div></div>
+    <div class="morning-row" style="margin-bottom:0"><div class="morning-time">7:45 AM</div><div class="morning-line"></div><div class="morning-act">Post-workout breakfast</div></div>
+  </div>
+
+  <div class="section-title">◆ Key Targets</div>
+  <div class="grid2">
+    <div class="target-card"><div class="target-label">DAILY CALORIES</div><div class="target-val">1,800–2,000 kcal</div><div class="target-sub">~500 kcal deficit = fat loss</div></div>
+    <div class="target-card"><div class="target-label">PROTEIN GOAL</div><div class="target-val">130–150g/day</div><div class="target-sub">Preserves muscle while losing fat</div></div>
+    <div class="target-card"><div class="target-label">WEEKLY LOSS</div><div class="target-val">1–1.5 lbs/week</div><div class="target-sub">Safe, sustainable rate</div></div>
+    <div class="target-card"><div class="target-label">TOTAL JOURNEY</div><div class="target-val">~12–18 months</div><div class="target-sub">262.8 → 150 lbs (112.8 lbs total)</div></div>
+  </div>
+
+  <div class="section-title">◆ Weekly Schedule</div>
+  <div class="week-switcher">
+    <button class="week-btn" onclick="changeWeek(-1)">‹</button>
+    <div class="week-center">
+      <div class="week-title" id="week-label">Week 1</div>
+      <div class="week-sub" id="week-game-label">Game day: Saturday 🏆</div>
+    </div>
+    <button class="week-btn" onclick="changeWeek(1)">›</button>
+  </div>
+  <div id="schedule-container"></div>
+
+  <div class="section-title">◆ 4-Phase Roadmap</div>
+  <div class="phase-card" style="border-left:4px solid #5a8a2e;">
+    <div class="phase-num" style="background:#5a8a2e;">1</div>
+    <div><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px;"><span class="phase-title">Foundation</span><span class="phase-dur" style="color:#5a8a2e;">Weeks 1–8</span></div><div class="phase-wt">262.8 → 237 lbs</div><div class="phase-focus">Build base fitness, establish habits, learn movements</div></div>
+  </div>
+  <div class="phase-card" style="border-left:4px solid #2e6a8a;">
+    <div class="phase-num" style="background:#2e6a8a;">2</div>
+    <div><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px;"><span class="phase-title">Build</span><span class="phase-dur" style="color:#2e6a8a;">Weeks 9–20</span></div><div class="phase-wt">237 → 210 lbs</div><div class="phase-focus">Increase intensity, add cricket drills, compound lifts</div></div>
+  </div>
+  <div class="phase-card" style="border-left:4px solid #8a5a2e;">
+    <div class="phase-num" style="background:#8a5a2e;">3</div>
+    <div><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px;"><span class="phase-title">Performance</span><span class="phase-dur" style="color:#8a5a2e;">Weeks 21–36</span></div><div class="phase-wt">210 → 180 lbs</div><div class="phase-focus">Sport-specific fitness, agility, endurance on field</div></div>
+  </div>
+  <div class="phase-card" style="border-left:4px solid #8a2e6a;">
+    <div class="phase-num" style="background:#8a2e6a;">4</div>
+    <div><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px;"><span class="phase-title">Lean Out</span><span class="phase-dur" style="color:#8a2e6a;">Weeks 37–52+</span></div><div class="phase-wt">180 → 150 lbs</div><div class="phase-focus">Cut remaining fat, maintain muscle, peak cricket fitness</div></div>
+  </div>
+</div>
+
+<!-- ══ WEIGHT LOSS ══ -->
+<div id="tab-weightloss" class="hidden">
+  <div class="info-box">
+    <div class="info-title">✅ Yes — this plan IS a weight loss program</div>
+    <div class="info-text">Every element — calorie deficit, morning workouts, protein-heavy chicken days, strength training, and cardio — works together for fat loss. Here's exactly how:</div>
+  </div>
+  <div class="section-title">◆ The 6 Pillars of Fat Loss</div>
+  <div class="pillar"><div class="pillar-icon">🔥</div><div><div class="pillar-title">Calorie Deficit</div><div class="pillar-desc">Burning more than you eat. Target: 1,900 kcal/day vs ~2,500 TDEE = 600 kcal gap daily.</div></div></div>
+  <div class="pillar"><div class="pillar-icon">🏋️</div><div><div class="pillar-title">Strength Training</div><div class="pillar-desc">Builds muscle that burns calories at rest. More muscle = higher metabolism = more fat burned 24/7.</div></div></div>
+  <div class="pillar"><div class="pillar-icon">🌅</div><div><div class="pillar-title">Morning Cardio</div><div class="pillar-desc">Working out after just a banana keeps insulin low and targets fat stores more effectively.</div></div></div>
+  <div class="pillar"><div class="pillar-icon">🍗</div><div><div class="pillar-title">High Protein Diet</div><div class="pillar-desc">Protein (especially chicken) keeps you full, prevents muscle loss, and has the highest thermic effect.</div></div></div>
+  <div class="pillar"><div class="pillar-icon">😴</div><div><div class="pillar-title">Sleep 7–8 Hours</div><div class="pillar-desc">Poor sleep raises cortisol and ghrelin. Sleep is when fat burns and muscle rebuilds.</div></div></div>
+  <div class="pillar"><div class="pillar-icon">💧</div><div><div class="pillar-title">Hydration</div><div class="pillar-desc">Drinking 3–4L/day boosts metabolism and prevents false hunger signals.</div></div></div>
+
+  <div class="section-title">◆ Fat Loss Math</div>
+  <div class="card" style="padding:14px;margin-bottom:14px;">
+    <div class="math-row"><span class="math-label">Your TDEE (estimated)</span><span class="math-val">~2,500 kcal/day</span></div>
+    <div class="math-row"><span class="math-label">Daily calorie target</span><span class="math-val">~1,900 kcal/day</span></div>
+    <div class="math-row"><span class="math-label">Daily deficit</span><span class="math-val">~600 kcal</span></div>
+    <div class="math-row"><span class="math-label">Weekly deficit</span><span class="math-val">~4,200 kcal</span></div>
+    <div class="math-row"><span class="math-label">Fat loss per week</span><span class="math-val">~1.2 lbs</span></div>
+    <div class="math-row"><span class="math-label">Workout bonus burn</span><span class="math-val">+250–400 kcal/session</span></div>
+    <div class="math-row" style="border-bottom:none;"><span class="math-label">Expected timeline</span><span class="math-val">12–18 months</span></div>
+  </div>
+  <div class="warn-card">
+    <div class="warn-title">⚠️ Avoid These Fat Loss Killers</div>
+    <div class="warn-item"><span class="warn-x">✗</span>Skipping breakfast after a workout — kills metabolism and causes muscle loss</div>
+    <div class="warn-item"><span class="warn-x">✗</span>Eating back all workout calories</div>
+    <div class="warn-item"><span class="warn-x">✗</span>Too much rice at night — stores as fat</div>
+    <div class="warn-item"><span class="warn-x">✗</span>Sugary drinks, juices, chai with sugar — hidden 300–500 kcal/day</div>
+    <div class="warn-item"><span class="warn-x">✗</span>Weekend overeating that erases the week's deficit</div>
+  </div>
+</div>
+
+<!-- ══ NUTRITION ══ -->
+<div id="tab-nutrition" class="hidden">
+  <div class="toggle-row">
+    <button class="toggle-btn toggle-veg" id="btn-veg" onclick="setMealMode('veg')">🥗 Veg Day (Tue/Thu/Sat)</button>
+    <button class="toggle-btn toggle-chk active" id="btn-chk" onclick="setMealMode('chk')">🍗 Chicken Day (Mon/Wed/Fri/Sun)</button>
+  </div>
+  <div id="meals-container"></div>
+  <div class="card-dark">
+    <div style="font-size:13px;color:#cccc60;font-weight:bold;margin-bottom:8px;">⚠️ Key Food Swaps</div>
+    <div class="swap-row"><span class="swap-text">White rice (1 cup) → ½ cup + more dal/chicken</span><span class="swap-save">−150 kcal</span></div>
+    <div class="swap-row"><span class="swap-text">Sugary chai/coffee → black or green tea</span><span class="swap-save">−100 kcal</span></div>
+    <div class="swap-row"><span class="swap-text">Ghee on roti → dry or minimal</span><span class="swap-save">−100 kcal</span></div>
+    <div class="swap-row"><span class="swap-text">Fried snacks → roasted chana, peanuts</span><span class="swap-save">−200 kcal</span></div>
+  </div>
+</div>
+
+<!-- ══ TRAINING ══ -->
+<div id="tab-training" class="hidden">
+  <div class="card-blue">
+    <div style="font-size:13px;color:#40aacc;font-weight:bold;margin-bottom:6px;">🌅 Morning Structure</div>
+    <div style="font-size:12px;color:#70a0c0;line-height:1.7;">
+      <b style="color:#90c0e0;">Strength (Mon/Thu/Fri):</b> 5-min warm-up → 45-min strength → 10-min stretch<br>
+      <b style="color:#90c0e0;">Cardio (Tue):</b> 5-min warm-up → 35–40 min walk/jog → 5-min cool-down<br>
+      <b style="color:#90c0e0;">Wed:</b> No morning workout — save energy for evening cricket practice<br>
+      Total morning commitment: <b style="color:#40aacc;">60 minutes</b>
+    </div>
+  </div>
+
+  <div class="section-title">◆ Cardio Progression</div>
+  <div class="progress-card"><div class="prog-week">Wks 1–4</div><div><div class="prog-act">35 min brisk walk (Tue only). No jogging yet.</div><div class="prog-int">Intensity: Easy</div></div></div>
+  <div class="progress-card"><div class="prog-week">Wks 5–8</div><div><div class="prog-act">40 min walk + 5 min jog intervals (1 min jog, 4 min walk)</div><div class="prog-int">Intensity: Low</div></div></div>
+  <div class="progress-card"><div class="prog-week">Wks 9–16</div><div><div class="prog-act">30 min jog/walk (2 min jog, 2 min walk)</div><div class="prog-int">Intensity: Moderate</div></div></div>
+  <div class="progress-card"><div class="prog-week">Wks 17–24</div><div><div class="prog-act">Continuous 25 min jog + HIIT on Tue</div><div class="prog-int">Intensity: Moderate-High</div></div></div>
+  <div class="progress-card" style="margin-bottom:16px;"><div class="prog-week">Wks 25+</div><div><div class="prog-act">30 min run + cricket as primary cardio</div><div class="prog-int">Intensity: High</div></div></div>
+
+  <div class="section-title">◆ Strength Exercises (tap to expand)</div>
+  <div class="ex-card" onclick="toggleEx(this)"><div class="ex-row"><span class="ex-name">Goblet Squat</span><span class="ex-sets">3×12</span></div><div class="ex-notes">💡 Bodyweight first 4 weeks. Great for mobility at higher weight.</div></div>
+  <div class="ex-card" onclick="toggleEx(this)"><div class="ex-row"><span class="ex-name">Push-ups</span><span class="ex-sets">3×10–15</span></div><div class="ex-notes">💡 Knee push-ups if needed. Progress to full in 4–6 weeks.</div></div>
+  <div class="ex-card" onclick="toggleEx(this)"><div class="ex-row"><span class="ex-name">Dumbbell Row</span><span class="ex-sets">3×12 each</span></div><div class="ex-notes">💡 One arm at a time. Works back, biceps, and core stability.</div></div>
+  <div class="ex-card" onclick="toggleEx(this)"><div class="ex-row"><span class="ex-name">Romanian Deadlift</span><span class="ex-sets">3×10</span></div><div class="ex-notes">💡 Add after week 4. Hamstrings + glutes + lower back.</div></div>
+  <div class="ex-card" onclick="toggleEx(this)"><div class="ex-row"><span class="ex-name">Shoulder Press</span><span class="ex-sets">3×12</span></div><div class="ex-notes">💡 Seated is fine. Dumbbells preferred over barbell to start.</div></div>
+  <div class="ex-card" onclick="toggleEx(this)" style="margin-bottom:16px;"><div class="ex-row"><span class="ex-name">Plank</span><span class="ex-sets">3×30–45 sec</span></div><div class="ex-notes">💡 Build to 60 sec over 8 weeks. Most important core exercise.</div></div>
+
+  <div class="recovery-card">
+    <div class="recovery-title">📏 Recovery Rules</div>
+    <div class="recovery-item"><span class="recovery-dot">◦</span>Sleep 7–8 hrs — fat burns &amp; muscle grows at night</div>
+    <div class="recovery-item"><span class="recovery-dot">◦</span>No morning workout on Wednesday — cricket practice evening</div>
+    <div class="recovery-item"><span class="recovery-dot">◦</span>Rest 60–90 sec between sets</div>
+    <div class="recovery-item"><span class="recovery-dot">◦</span>If knees/back hurt — reduce weight immediately</div>
+    <div class="recovery-item"><span class="recovery-dot">◦</span>Sunday (non-game weeks): light walk + stretch only</div>
+  </div>
+</div>
+
+<!-- ══ CRICKET ══ -->
+<div id="tab-cricket" class="hidden">
+  <div class="card-gold">
+    <div style="font-size:13px;color:#ccaa40;font-weight:bold;margin-bottom:6px;">🏏 Schedule: Wed Practice + Alternating Sat/Sun Games</div>
+    <div style="font-size:12px;color:#a08850;line-height:1.6;">Wed evenings = practice. Games alternate: <b style="color:#ffd070;">Week 1 → Saturday, Week 2 → Sunday</b>, and so on. Thu strength training the day after a game helps with recovery.</div>
+  </div>
+
+  <div class="week-gold">
+    <button class="week-btn-gold" onclick="changeWeek(-1)">‹</button>
+    <div class="week-center">
+      <div class="week-title-gold" id="cricket-week-label">Week 1</div>
+      <div class="week-sub-gold" id="cricket-game-label">Game day: Saturday 🏆 · Rest: Sunday 🧘</div>
+    </div>
+    <button class="week-btn-gold" onclick="changeWeek(1)">›</button>
+  </div>
+
+  <div class="section-title">◆ Cricket Drills (tap to expand)</div>
+  <div class="ex-card gold" onclick="toggleEx(this)"><div class="ex-row"><span class="ex-name gold">Batting stance squats</span><span class="ex-sets gold">3×10</span></div><div class="ex-notes gold">🏏 Hip &amp; knee strength for low batting stance</div></div>
+  <div class="ex-card gold" onclick="toggleEx(this)"><div class="ex-row"><span class="ex-name gold">Rotational med ball throw</span><span class="ex-sets gold">3×8</span></div><div class="ex-notes gold">🏏 Core rotational power — directly transfers to batting</div></div>
+  <div class="ex-card gold" onclick="toggleEx(this)"><div class="ex-row"><span class="ex-name gold">Lateral shuffles (30m)</span><span class="ex-sets gold">5×</span></div><div class="ex-notes gold">🏏 Fielding footwork. Keep knees bent throughout.</div></div>
+  <div class="ex-card gold" onclick="toggleEx(this)"><div class="ex-row"><span class="ex-name gold">Sprint-walk intervals</span><span class="ex-sets gold">8×30m</span></div><div class="ex-notes gold">🏏 Mimics between-wickets running. Rest 45 sec between.</div></div>
+  <div class="ex-card gold" onclick="toggleEx(this)"><div class="ex-row"><span class="ex-name gold">Overhead throw mimics</span><span class="ex-sets gold">3×10</span></div><div class="ex-notes gold">🏏 Shoulder health for throwing and bowling</div></div>
+  <div class="ex-card gold" onclick="toggleEx(this)" style="margin-bottom:16px;"><div class="ex-row"><span class="ex-name gold">Farmer carries</span><span class="ex-sets gold">3×30m</span></div><div class="ex-notes gold">🏏 Grip + full body endurance. Use dumbbells or heavy bags.</div></div>
+
+  <div class="section-title">◆ Match-Day Nutrition</div>
+  <div class="card" style="margin-bottom:14px;">
+    <div class="matchday-row"><div class="matchday-time">3 hrs before</div><div class="matchday-food">Light meal: 1–2 rotis + dal, no heavy oil</div></div>
+    <div class="matchday-row"><div class="matchday-time">1 hr before</div><div class="matchday-food">Banana + coconut water</div></div>
+    <div class="matchday-row"><div class="matchday-time">During match</div><div class="matchday-food">Sips of water every 15–20 min, coconut water at breaks</div></div>
+    <div class="matchday-row" style="margin-bottom:0;"><div class="matchday-time">Post match</div><div class="matchday-food">High protein within 1 hr (chicken on chicken days, eggs + dal otherwise)</div></div>
+  </div>
+
+  <div class="section-title">◆ On-Field Milestones</div>
+  <div class="milestone"><div class="milestone-wt">262.8→237 lbs</div><div class="milestone-text">Walk 5km without stopping. Bat 20 min without exhaustion.</div></div>
+  <div class="milestone"><div class="milestone-wt">237→210 lbs</div><div class="milestone-text">Field for a full 30-over game. Run 2 between-wickets without cramping.</div></div>
+  <div class="milestone"><div class="milestone-wt">210→180 lbs</div><div class="milestone-text">Bowl 3–4 overs in a stretch. Chase hard in the field.</div></div>
+  <div class="milestone" style="margin-bottom:16px;"><div class="milestone-wt">180→150 lbs</div><div class="milestone-text">Play a full match day at your peak. Compete like you remember.</div></div>
+
+  <div class="cheer">
+    <div class="cheer-icon">🏏</div>
+    <div class="cheer-title">You've got this.</div>
+    <div class="cheer-text">Wed practice + alternating weekend games means you're playing cricket <b style="color:#8ab870;">every single week</b>. The fitness will follow the field time.</div>
+  </div>
+</div>
+
+</div><!-- end .content -->
+
+<script>
+var currentWeek = 1;
+
+var weekDays = function(odd) {
+  return [
+    { day:"Mon", type:"strength", label:"Upper Body Strength",   time:"6:00–7:00 AM", icon:"💪", chicken:true,  note:"Push-ups, Dumbbell Row, Shoulder Press, Plank" },
+    { day:"Tue", type:"cardio",   label:"Zone 2 Walk + Drills",  time:"6:00–6:45 AM", icon:"🚶", chicken:false, note:"45 min brisk walk + lateral shuffles" },
+    { day:"Wed", type:"cricket",  label:"Cricket Practice",       time:"Evening",       icon:"🏏", chicken:true,  note:"No morning workout — save energy for evening practice. Batting, bowling, fielding drills." },
+    { day:"Thu", type:"strength", label:"Lower Body Strength",   time:"6:00–7:00 AM", icon:"🦵", chicken:false, note:"Goblet Squat, Romanian Deadlift, Lunges, Calf Raises" },
+    { day:"Fri", type:"strength", label:"Full Body + Core",      time:"6:00–7:00 AM", icon:"🔥", chicken:true,  note:"Full body circuit + 15 min core finisher" },
+    {
+      day:"Sat",
+      type: odd ? "game" : "cardio",
+      label: odd ? "🏆 Cricket GAME" : "Light Cardio + Rest",
+      time: odd ? "Match time" : "6:00–6:45 AM",
+      icon: odd ? "🏆" : "🚶",
+      chicken: false,
+      note: odd ? "Match day! Pre-game meal 3 hrs before. Coconut water during." : "Easy jog/walk 30 min. Prep & rest for Sunday game."
+    },
+    {
+      day:"Sun",
+      type: odd ? "rest" : "game",
+      label: odd ? "Active Rest + Stretch" : "🏆 Cricket GAME",
+      time: odd ? "15–20 min" : "Match time",
+      icon: odd ? "🧘" : "🏆",
+      chicken: true,
+      note: odd ? "Light walk, yoga, foam rolling. Recover for Wednesday practice." : "Match day! Pre-game meal 3 hrs before. Coconut water during."
+    }
+  ];
+};
+
+function renderSchedule() {
+  var odd = currentWeek % 2 !== 0;
+  var days = weekDays(odd);
+  var html = '';
+  days.forEach(function(d, i) {
+    var rowClass = 'day-row';
+    if (d.type === 'game') rowClass += ' game';
+    if (d.type === 'cricket') rowClass += ' cricket-day';
+    if (d.type === 'rest') rowClass += ' rest-day';
+    var nameClass = 'day-name' + (d.type === 'game' ? ' gold' : '');
+    var typeCls = 'type-badge type-' + d.type;
+    html += '<div class="'+rowClass+'" onclick="toggleDay(this)">';
+    html += '<div class="day-flex">';
+    html += '<div class="day-label">'+d.day+'</div>';
+    html += '<div class="day-icon">'+d.icon+'</div>';
+    html += '<div class="day-info"><div class="'+nameClass+'">'+d.label+'</div><div class="day-time">'+d.time+'</div></div>';
+    if (d.chicken) html += '<div class="chicken-badge">🍗</div>';
+    html += '<div class="'+typeCls+'">'+d.type+'</div>';
+    html += '</div>';
+    html += '<div class="day-note">💡 '+d.note+'</div>';
+    html += '</div>';
+  });
+  document.getElementById('schedule-container').innerHTML = html;
+  document.getElementById('week-label').textContent = 'Week ' + currentWeek;
+  document.getElementById('week-game-label').textContent = 'Game day: ' + (odd ? 'Saturday 🏆' : 'Sunday 🏆');
+  document.getElementById('cricket-week-label').textContent = 'Week ' + currentWeek;
+  document.getElementById('cricket-game-label').textContent = 'Game day: ' + (odd ? 'Saturday 🏆' : 'Sunday 🏆') + ' · Rest: ' + (odd ? 'Sunday 🧘' : 'Saturday 🚶');
+}
+
+function changeWeek(dir) {
+  currentWeek = Math.max(1, currentWeek + dir);
+  renderSchedule();
+}
+
+function toggleDay(el) {
+  var note = el.querySelector('.day-note');
+  note.classList.toggle('open');
+}
+
+// Meal data
+var baseMeals = [
+  { meal:"Pre-Workout",         time:"5:30 AM",        icon:"⚡", kcal:"90–100 kcal",   foods:["1 banana (quick energy)","1 glass water + pinch of salt"], tip:"Eat 20–30 min before workout. Don't train fully fasted at 262 lbs — risk of fatigue." },
+  { meal:"Post-Workout Breakfast", time:"7:15–8:00 AM", icon:"🌅", kcal:"320–360 kcal", foods:["2 idlis or 1 dosa (oats/rava)","Sambar (protein-rich)","1 cup filter coffee/green tea (no sugar)"], tip:"Eat within 30 min of finishing workout. This is your most important meal." },
+  { meal:"Mid-Morning",         time:"10:30–11:00 AM", icon:"🫘", kcal:"150–180 kcal",  foods:["Handful of roasted chana or peanuts","1 small fruit (guava or apple)"], tip:"Prevents overeating at lunch. Keep it light." },
+  { meal:"Lunch",               time:"1:00–1:30 PM",   icon:"🍛", kcal:"500–550 kcal",  foods:["½–¾ cup cooked rice","1 large bowl dal","1 sabzi / vegetable curry","Salad (cucumber, tomato, onion)","1 cup curd/raita"], tip:"Eat dal first, then rice. Curd adds protein and aids digestion." },
+  { meal:"Evening Snack",       time:"4:30–5:00 PM",   icon:"🥛", kcal:"100–130 kcal",  foods:["1 cup buttermilk (chaas)","Or 1 boiled egg + 1 small fruit"], tip:"Light fuel. No heavy snacking — dinner is coming." },
+  { meal:"Dinner",              time:"7:30–8:00 PM",   icon:"🌙", kcal:"380–430 kcal",  foods:["2 rotis (wheat) or ½ cup rice","Dal or vegetable curry","Raita or curd"], tip:"Finish 2 hrs before sleep. Prefer rotis over rice at night." }
+];
+var chickenOverrides = {
+  "Post-Workout Breakfast": { kcal:"380–420 kcal", foods:["2 idlis or 1 dosa","Sambar","2 boiled eggs OR 80g grilled chicken strips","1 cup green tea"], tip:"Cold grilled chicken with idli is a great protein combo." },
+  "Lunch":                  { kcal:"520–560 kcal", foods:["½ cup cooked rice","150g grilled/boiled chicken (no skin)","1 sabzi or salad","1 cup curd"], tip:"Chicken breast — 31g protein per 100g with barely any fat." },
+  "Dinner":                 { kcal:"420–460 kcal", foods:["2 rotis (wheat)","150g chicken curry (light gravy, minimal oil)","Salad or raita"], tip:"Cook in tomato-onion gravy with spices — zero compromise on taste." }
+};
+
+var mealMode = 'chk';
+function setMealMode(mode) {
+  mealMode = mode;
+  document.getElementById('btn-veg').classList.toggle('active', mode==='veg');
+  document.getElementById('btn-chk').classList.toggle('active', mode==='chk');
+  renderMeals();
+}
+function renderMeals() {
+  var html = '';
+  baseMeals.forEach(function(m) {
+    var ov = mealMode === 'chk' && chickenOverrides[m.meal];
+    var foods = ov ? ov.foods : m.foods;
+    var kcal = ov ? ov.kcal : m.kcal;
+    var tip = ov ? ov.tip : m.tip;
+    var cardCls = 'meal-card' + (ov ? ' chicken' : '');
+    var headCls = 'meal-head' + (ov ? ' chicken' : '');
+    var kcalCls = 'meal-kcal' + (ov ? ' chicken' : '');
+    html += '<div class="'+cardCls+'">';
+    html += '<div class="'+headCls+'"><div><span class="meal-name">'+m.icon+' '+m.meal+'</span><span class="meal-time">'+m.time+'</span></div><span class="'+kcalCls+'">'+kcal+'</span></div>';
+    html += '<div class="meal-body">';
+    foods.forEach(function(f){ html += '<div class="food-item"><span class="food-dot">▸</span>'+f+'</div>'; });
+    html += '<div class="tip-box">💡 '+tip+'</div>';
+    html += '</div></div>';
+  });
+  document.getElementById('meals-container').innerHTML = html;
+}
+
+function toggleEx(el) {
+  var notes = el.querySelector('.ex-notes');
+  notes.classList.toggle('open');
+}
+
+function showTab(id, btn) {
+  ['overview','weightloss','nutrition','training','cricket'].forEach(function(t){
+    document.getElementById('tab-'+t).classList.add('hidden');
+  });
+  document.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('active'); });
+  document.getElementById('tab-'+id).classList.remove('hidden');
+  btn.classList.add('active');
+}
+
+// Init
+renderSchedule();
+renderMeals();
+</script>
+</body>
+</html>
